@@ -10,7 +10,7 @@ async function getLogins() {
   }
 };
 async function getLoginByUsername(username) {
-  let SQL = `SELECT * FROM public."Logins" WHERE username = $1`;
+  let SQL = `SELECT id AS _id, username, password, email FROM public."Logins" WHERE username = $1`;
   try {
     let results = await dal.query(SQL, [username]);
     if(DEBUG) console.log(`results after query: ${JSON.stringify(results.rows[0])}`);
@@ -20,7 +20,7 @@ async function getLoginByUsername(username) {
   }  
 };
 async function getLoginByEmail(email) {
-  let SQL = `SELECT * FROM public."Logins" WHERE email = $1`;
+  let SQL = `SELECT id AS _id, username, password, email FROM public."Logins" WHERE email = $1`;
   try {
     let results = await dal.query(SQL, [email]);
     return results.rows[0];
@@ -29,7 +29,7 @@ async function getLoginByEmail(email) {
   }  
 };
 async function getLoginById(id) {
-  let SQL = `SELECT * FROM public."Logins" WHERE id = $1`;
+  let SQL = `SELECT id AS _id, username, password, email FROM public."Logins" WHERE id = $1`;
   try {
     let results = await dal.query(SQL, [id]);
     return results.rows[0];

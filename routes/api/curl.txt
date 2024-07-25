@@ -1,0 +1,6 @@
+
+curl -X GET http://localhost:3000/api/auth/66a0ef0ba425545d6983ba4f
+
+curl -d "password=mando" -X PATCH http://localhost:3000/api/auth/66a0ef0ba425545d6983ba4f
+
+curl -X DELETE http://localhost:3000/api/auth/66a0ef0ba425545d6983ba4f

@@ -23,7 +23,6 @@ app.listen(PORT, (err) => {
 
 app.get('/', async (req, res) => {
     res.render('index', {status: req.session.status});
-    // res.render('index', {status: app.locals.status});
 });
 
 app.get('/about', async (req, res) => {
@@ -32,6 +31,10 @@ app.get('/about', async (req, res) => {
 
 const authRouter = require('./routes/auth')
 app.use("/auth", authRouter);
+
+// anything beginning with "/api" will go into this
+const apiRouter = require('./routes/api')
+app.use('/api', apiRouter);
 
 app.use((req, res) => {
     res.status(404).render('404', {status: req.session.status});

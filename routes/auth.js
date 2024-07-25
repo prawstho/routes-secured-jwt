@@ -1,10 +1,11 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 
-// const { addLogin, getLoginByUsername } = require('../services/p.auth.dal')
-const { addLogin, getLoginByUsername } = require('../services/m.auth.dal')
+const { addLogin, getLoginByUsername } = require('../services/p.auth.dal')
+// const { addLogin, getLoginByUsername } = require('../services/m.auth.dal')
 
 router.use(express.static('public'));
 
@@ -26,8 +27,14 @@ router.post('/', async (req, res) => {
             return;
         }
         if( await bcrypt.compare(req.body.password, user.password)) {
-            // change using app.locals to use session or json web token (jwt)
+            const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, { expiresIn: '3m' });
+            if(DEBUG) {
+                console.log(`curl -H "Authorization: Bearer ${token}" -X GET http://localhost:3000/api/auth/${user._id}`);
+                console.log(`curl -d "password=xxxxx" -H "Authorization: Bearer ${token}" -X POST http://localhost:3000/api/auth/${user._id}`);
+                console.log(`curl -H "Authorization: Bearer ${token}" -X DELETE http://localhost:3000/api/auth/${user._id}`);
+            }
             req.session.user = user;
+            req.session.token = token;
             req.session.status = 'Happy for your return ' + user.username;
             res.redirect('/');
             return;
@@ -45,12 +52,13 @@ router.post('/', async (req, res) => {
     }
 });
 
-// from http browser it has /auth/new
+// GET (display) the register html page
 router.get('/new', async (req, res) => {
     res.render('register', {status: req.session.status});
     return;
 });
 
+// POST (register) the new login
 router.post('/new', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -101,6 +109,7 @@ router.post('/new', async (req, res) => {
     }
 });
 
+// clear the session
 router.get('/exit', async (req, res) => {
     if(DEBUG) console.log('get /exit');
     // clear out the express-session
